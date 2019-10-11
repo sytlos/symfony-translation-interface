@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>App translations</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="domain">Translation domain</label>
+                <select name="domain" class="form-control">
+                    {% for domain in domains %}
+                        <option value="{{ domain }}" {% if domain == selectedDomain %}selected{% endif %}>{{ domain }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="locale">Translation locale</label>
+                <select name="locale" class="form-control">
+                    {% for locale in locales %}
+                        <option value="{{ locale }}" {% if locale == selectedLocale %}selected{% endif %}>{{ locale }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Translation keys</th>
+                    <th>Messages ({{ defaultLocale }})</th>
+                    <th>Messages ()</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for key, message in messages %}
+                    <tr>
+                        <td>
+                            <code>
+                                {{ key }}
+                            </code>
+                        </td>
+                        <td>{{ message }}</td>
+                        <td>
+                            <input class="form-control" type="text">
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
