@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -66,16 +67,27 @@ class TranslationController extends AbstractController
      * @Route("/submit")
      *
      * @param Request $request
+     * @param ParameterBagInterface $params
      *
      * @return JsonResponse
      */
-    public function submitTranslations(Request $request)
+    public function submitTranslations(Request $request, ParameterBagInterface $params)
     {
+        $translationsPath = $params->get('translator.default_path');
         $translations = $request->request->all();
 
-        foreach ($translations as $translation) {
-            list($key, $locale, $domain) = \explode('-', $translation);
+        $filesystem = new Filesystem();
 
+        foreach ($translations as $infos => $translation) {
+            list($key, $locale, $domain) = \explode('-', $infos);
+
+            $filepath = \sprintf('%s/%s.%s.yml', $translationsPath, $domain, $locale);
+            if (!$filesystem->exists($filepath)) {
+                $filesystem->touch($filepath);
+            }
+
+            $catalog = new MessageCatalogue($locale);
+            $catalog->add($key, $domain);
         }
 
         return new JsonResponse('Science bitch');

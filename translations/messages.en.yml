@@ -2,3 +2,6 @@ app:
   title: 'My title'
   description: 'My description'
   call_to_action: 'Submit'
+  form:
+    labels:
+      firstname: 'Firstname'
