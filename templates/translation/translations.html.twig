@@ -30,12 +30,12 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <table class="table">
+            <table class="table" data-path="{{ absolute_url(path('app_translation_translations', {'domain': '__DOMAIN__', 'locale': '__LOCALE__'})) }}">
                 <thead>
                 <tr>
                     <th>Translation keys</th>
                     <th>Messages ({{ defaultLocale }})</th>
-                    <th>Messages ()</th>
+                    <th>Messages ({{ selectedLocale }})</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -48,7 +48,16 @@
                         </td>
                         <td>{{ message }}</td>
                         <td>
-                            <input class="form-control" type="text">
+                            {% set inputVal = '' %}
+                            {% if catalogs[selectedLocale][key] is defined %}
+                                {% set inputVal = catalogs[selectedLocale][key] %}
+                            {% endif %}
+                            <input class="form-control"
+                                   type="text"
+                                   value="{{ inputVal }}"
+                                   placeholder="Translation in {{ selectedLocale }}"
+                                   name="{{ key }}-{{ selectedLocale }}-{{ selectedDomain }}"
+                            >
                         </td>
                     </tr>
                 {% endfor %}
@@ -56,4 +65,25 @@
             </table>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const domainSelect = document.querySelector('select[name="domain"]');
+            const localeSelect = document.querySelector('select[name="locale"]');
+
+            domainSelect.addEventListener('change', () => {
+                submitChange(domainSelect.value, localeSelect.value);
+            });
+
+            localeSelect.addEventListener('change', () => {
+                submitChange(domainSelect.value, localeSelect.value);
+            });
+        });
+
+        function submitChange(domain, locale) {
+            window.location.href = document.querySelector('table').dataset.path.replace('__DOMAIN__', domain).replace('__LOCALE__', locale);
+        }
+    </script>
 {% endblock %}

@@ -42,10 +42,12 @@ class TranslationController extends AbstractController
         $currentCatalog = new MessageCatalogue($defaultLocale);
         $reader->read($translationsPath, $currentCatalog);
 
+        $catalogs = [];
         foreach ($availableLocales as $locale) {
-            if ($locale === $defaultLocale) {
-                continue;
-            }
+            $catalog = new MessageCatalogue($locale);
+            $reader->read($translationsPath, $catalog);
+
+            $catalogs[$locale] = $catalog->all($selectedDomain);
         }
 
         return $this->render('translation/translations.html.twig', [
@@ -55,6 +57,7 @@ class TranslationController extends AbstractController
             'defaultLocale' => $defaultLocale,
             'selectedLocale' => $selectedLocale,
             'locales' => $availableLocales,
+            'catalogs' => $catalogs,
         ]);
     }
 
