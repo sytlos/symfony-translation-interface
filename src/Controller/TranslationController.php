@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -59,6 +60,25 @@ class TranslationController extends AbstractController
             'locales' => $availableLocales,
             'catalogs' => $catalogs,
         ]);
+    }
+
+    /**
+     * @Route("/submit")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function submitTranslations(Request $request)
+    {
+        $translations = $request->request->all();
+
+        foreach ($translations as $translation) {
+            list($key, $locale, $domain) = \explode('-', $translation);
+
+        }
+
+        return new JsonResponse('Science bitch');
     }
 
     /**

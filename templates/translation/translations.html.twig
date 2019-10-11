@@ -30,7 +30,10 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <table class="table" data-path="{{ absolute_url(path('app_translation_translations', {'domain': '__DOMAIN__', 'locale': '__LOCALE__'})) }}">
+            <table class="table"
+                   data-path="{{ absolute_url(path('app_translation_translations', {'domain': '__DOMAIN__', 'locale': '__LOCALE__'})) }}"
+                   data-submit="{{ absolute_url(path('app_translation_submittranslations')) }}"
+            >
                 <thead>
                 <tr>
                     <th>Translation keys</th>
@@ -79,6 +82,24 @@
 
             localeSelect.addEventListener('change', () => {
                 submitChange(domainSelect.value, localeSelect.value);
+            });
+
+            const translationInputs = document.querySelectorAll('input[type="text"]');
+
+            translationInputs.forEach((translationInput) => {
+                translationInput.addEventListener('blur', () => {
+                    let formData = new FormData();
+                    formData.append(translationInput.name, translationInput.value);
+
+                    fetch(document.querySelector('table').dataset.submit, {
+                        method: 'POST',
+                        body: formData
+                    }).then((response) => {
+                        return response.json();
+                    }).then((data) => {
+                        return data;
+                    });
+                })
             });
         });
 
