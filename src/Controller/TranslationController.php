@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Reader\TranslationReaderInterface;
+use Symfony\Component\Translation\Writer\TranslationWriterInterface;
 
 /**
  * Class TranslationController
@@ -68,10 +69,11 @@ class TranslationController extends AbstractController
      *
      * @param Request $request
      * @param ParameterBagInterface $params
+     * @param TranslationWriterInterface $writer
      *
      * @return JsonResponse
      */
-    public function submitTranslations(Request $request, ParameterBagInterface $params)
+    public function submitTranslations(Request $request, ParameterBagInterface $params, TranslationWriterInterface $writer)
     {
         $translationsPath = $params->get('translator.default_path');
         $translations = $request->request->all();
@@ -79,7 +81,10 @@ class TranslationController extends AbstractController
         $filesystem = new Filesystem();
 
         foreach ($translations as $infos => $translation) {
-            list($key, $locale, $domain) = \explode('-', $infos);
+            list($key, $locale, $domain) = \explode('|', $infos);
+
+            // PHP is replacing the '.' with '_', so we replace them back here
+            $key = \str_replace('_', '.', $key);
 
             $filepath = \sprintf('%s/%s.%s.yml', $translationsPath, $domain, $locale);
             if (!$filesystem->exists($filepath)) {
@@ -87,7 +92,12 @@ class TranslationController extends AbstractController
             }
 
             $catalog = new MessageCatalogue($locale);
-            $catalog->add($key, $domain);
+            $catalog->add([$key => $translation], $domain);
+
+            $writer->write($catalog, 'yml', [
+                'path' => $translationsPath,
+                'as_tree' => true,
+            ]);
         }
 
         return new JsonResponse(['success' => true]);
