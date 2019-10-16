@@ -2,11 +2,10 @@
 
 namespace App\Controller;
 
+use App\Form\TranslationsFiltersType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,35 +30,36 @@ class TranslationController extends AbstractController
      */
     public function translations(Request $request, ParameterBagInterface $params, TranslationReaderInterface $reader)
     {
-        $translationsPath = $params->get('translator.default_path');
-        $translationsDomains = $this->getTranslationDomains($translationsPath);
-        $defaultDomain = 'messages';
-        $selectedDomain = $request->query->get('domain', $defaultDomain);
-
         $defaultLocale = $request->getDefaultLocale();
-        $availableLocales = $params->get('supported_locales');
 
-        $selectedLocale = $request->query->get('locale', $availableLocales[0]);
+        $form = $this->createForm(TranslationsFiltersType::class, [
+            'domain' => 'messages',
+            'locale' => $defaultLocale,
+        ], [
+            'defaultLocale' => $defaultLocale,
+            'method' => Request::METHOD_GET,
+        ]);
+
+        $form->handleRequest($request);
+
+        $selectedDomain = $form->get('domain')->getData();
+        $selectedLocale = $form->get('locale')->getData();
+
+        $translationsPath = $params->get('translator.default_path');
 
         $currentCatalog = new MessageCatalogue($defaultLocale);
         $reader->read($translationsPath, $currentCatalog);
 
-        $catalogs = [];
-        foreach ($availableLocales as $locale) {
-            $catalog = new MessageCatalogue($locale);
-            $reader->read($translationsPath, $catalog);
-
-            $catalogs[$locale] = $catalog->all($selectedDomain);
-        }
+        $selectedCatalog = new MessageCatalogue($selectedLocale);
+        $reader->read($translationsPath, $selectedCatalog);
 
         return $this->render('translation/translations.html.twig', [
+            'form' => $form->createView(),
             'messages' => $currentCatalog->all($selectedDomain),
-            'domains' => $translationsDomains,
             'selectedDomain' => $selectedDomain,
             'defaultLocale' => $defaultLocale,
             'selectedLocale' => $selectedLocale,
-            'locales' => $availableLocales,
-            'catalogs' => $catalogs,
+            'translatedMessages' => $selectedCatalog->all($selectedDomain),
         ]);
     }
 
@@ -90,29 +90,6 @@ class TranslationController extends AbstractController
             $catalog->add($key, $domain);
         }
 
-        return new JsonResponse('Science bitch');
-    }
-
-    /**
-     * @param $translationsPath
-     * @return array
-     */
-    protected function getTranslationDomains($translationsPath)
-    {
-        $finder = new Finder();
-        $files = $finder->files()->in($translationsPath);
-
-        $domains = [];
-
-        if (!$files->hasResults()) {
-            return $domains;
-        }
-
-        /** @var SplFileInfo $file */
-        foreach ($files as $file) {
-            $domains[] = \explode('.', $file->getFilename())[0];
-        }
-
-        return \array_unique($domains);
+        return new JsonResponse(['success' => true]);
     }
 }

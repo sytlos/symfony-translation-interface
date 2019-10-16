@@ -1,0 +1,12 @@
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{{ form_start(form) }}
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_row(form.domain) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.locale) }}
+        </div>
+    </div>
+{{ form_end(form) }}
