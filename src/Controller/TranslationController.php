@@ -21,15 +21,24 @@ use Symfony\Component\Translation\Writer\TranslationWriterInterface;
 class TranslationController extends AbstractController
 {
     /**
+     * @var TranslationReaderInterface
+     */
+    private $reader;
+
+    public function __construct(TranslationReaderInterface $reader)
+    {
+        $this->reader = $reader;
+    }
+
+    /**
      * @Route("/")
      *
      * @param Request $request
      * @param ParameterBagInterface $params
-     * @param TranslationReaderInterface $reader
      *
      * @return Response
      */
-    public function translations(Request $request, ParameterBagInterface $params, TranslationReaderInterface $reader)
+    public function translations(Request $request, ParameterBagInterface $params)
     {
         $defaultLocale = $request->getDefaultLocale();
 
@@ -49,10 +58,10 @@ class TranslationController extends AbstractController
         $translationsPath = $params->get('translator.default_path');
 
         $currentCatalog = new MessageCatalogue($defaultLocale);
-        $reader->read($translationsPath, $currentCatalog);
+        $this->reader->read($translationsPath, $currentCatalog);
 
         $selectedCatalog = new MessageCatalogue($selectedLocale);
-        $reader->read($translationsPath, $selectedCatalog);
+        $this->reader->read($translationsPath, $selectedCatalog);
 
         return $this->render('translation/translations.html.twig', [
             'form' => $form->createView(),
@@ -76,15 +85,18 @@ class TranslationController extends AbstractController
     public function submitTranslations(Request $request, ParameterBagInterface $params, TranslationWriterInterface $writer)
     {
         $translationsPath = $params->get('translator.default_path');
-        $translations = $request->request->all();
 
-        $filesystem = new Filesystem();
+        $translation = $request->request->get('translation');
+        $domain = $request->request->get('domain');
+        $locale = $request->request->get('locale');
+        $key = $request->request->get('key');
 
-        foreach ($translations as $infos => $translation) {
-            list($key, $locale, $domain) = \explode('|', $infos);
+        $data = [];
 
-            // PHP is replacing the '.' with '_', so we replace them back here
-            $key = \str_replace('_', '.', $key);
+        if (!$translation || !$domain || !$locale || !$key) {
+            $data['success'] = false;
+        } else {
+            $filesystem = new Filesystem();
 
             $filepath = \sprintf('%s/%s.%s.yml', $translationsPath, $domain, $locale);
             if (!$filesystem->exists($filepath)) {
@@ -92,14 +104,17 @@ class TranslationController extends AbstractController
             }
 
             $catalog = new MessageCatalogue($locale);
+            $this->reader->read($translationsPath, $catalog);
             $catalog->add([$key => $translation], $domain);
 
             $writer->write($catalog, 'yml', [
                 'path' => $translationsPath,
                 'as_tree' => true,
             ]);
+
+            $data['success'] = true;
         }
 
-        return new JsonResponse(['success' => true]);
+        return new JsonResponse($data);
     }
 }

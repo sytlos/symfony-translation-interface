@@ -40,16 +40,23 @@
                                    type="text"
                                    value="{{ inputVal }}"
                                    placeholder="Translation in {{ selectedLocale }}"
-                                   name="{{ key }}|{{ selectedLocale }}|{{ selectedDomain }}"
+                                   name="translation"
                             >
+                            <input type="hidden" name="key" value="{{ key }}">
                             <div class="alert alert-success mt-2 mb-0 p-2 d-none" role="alert">
                                 Translation saved !
+                            </div>
+                            <div class="alert alert-danger mt-2 mb-0 p-2 d-none" role="alert">
+                                An error occured !
                             </div>
                         </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
+
+            <input type="hidden" name="domain" value="{{ selectedDomain }}">
+            <input type="hidden" name="locale" value="{{ selectedLocale }}">
         </div>
     </div>
 {% endblock %}
@@ -68,12 +75,21 @@
                 submitChange(domainSelect.value, localeSelect.value);
             });
 
-            const translationInputs = document.querySelectorAll('input[type="text"]');
+            const translationInputs = document.querySelectorAll('input[name="translation"]');
+            const domainInput = document.querySelector('input[name="domain"]');
+            const localeInput = document.querySelector('input[name="locale"]');
 
             translationInputs.forEach((translationInput) => {
                 translationInput.addEventListener('blur', () => {
+                    const cell = translationInput.parentNode;
+                    const keyInput = cell.querySelector('input[name="key"]');
+
                     let formData = new FormData();
+
                     formData.append(translationInput.name, translationInput.value);
+                    formData.append(domainInput.name, domainInput.value);
+                    formData.append(localeInput.name, localeInput.value);
+                    formData.append(keyInput.name, keyInput.value);
 
                     fetch(document.querySelector('table').dataset.submit, {
                         method: 'POST',
@@ -81,13 +97,13 @@
                     }).then((response) => {
                         return response.json();
                     }).then((data) => {
+                        let alertBox = cell.querySelector('.alert-danger');
+
                         if (data.success) {
-                            const successAlert = translationInput.nextSibling.nextSibling;
-                            successAlert.classList.remove('d-none');
-                            setTimeout(() => {
-                                successAlert.classList.add('d-none');
-                            }, 1000);
+                            alertBox = cell.querySelector('.alert-success');
                         }
+
+                        showAlert(alertBox);
                     });
                 })
             });
@@ -95,6 +111,13 @@
 
         function submitChange(domain, locale) {
             window.location.href = document.querySelector('table').dataset.path.replace('__DOMAIN__', domain).replace('__LOCALE__', locale);
+        }
+
+        function showAlert(alert) {
+            alert.classList.remove('d-none');
+            setTimeout(() => {
+                alert.classList.add('d-none');
+            }, 1000);
         }
     </script>
 {% endblock %}
