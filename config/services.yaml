@@ -28,3 +28,6 @@ services:
     # please note that last definitions always *replace* previous ones
     App\Translation\TranslationManager:
         $translationPath: '%translator.default_path%'
+
+    App\Form\TranslationsFiltersType:
+        $supportedLocales: '%supported_locales%'

@@ -83,6 +83,10 @@
 
             translationInputs.forEach((translationInput) => {
                 translationInput.addEventListener('blur', () => {
+                    if (translationInput.value === '') {
+                        return;
+                    }
+
                     const cell = translationInput.parentNode;
                     const keyInput = cell.querySelector('input[name="key"]');
 

@@ -7,3 +7,7 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+translations
+!translations/colors.en.yml
+!translations/countries.en.yml

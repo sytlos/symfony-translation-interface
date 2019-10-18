@@ -2,41 +2,38 @@
 
 namespace App\Form;
 
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use App\Translation\TranslationManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\MessageCatalogue;
-use Symfony\Component\Translation\Reader\TranslationReaderInterface;
 
 class TranslationsFiltersType extends AbstractType
 {
     /**
-     * @var TranslationReaderInterface
+     * @var TranslationManager
      */
-    private $reader;
+    private $translationManager;
 
     /**
-     * @var ParameterBagInterface
+     * @var array
      */
-    private $params;
+    private $supportedLocales;
 
     /**
      * TranslationsFiltersType constructor.
-     * @param TranslationReaderInterface $reader
-     * @param ParameterBagInterface $params
+     * @param TranslationManager $translationManager
+     * @param array $supportedLocales
      */
-    public function __construct(TranslationReaderInterface $reader, ParameterBagInterface $params)
+    public function __construct(TranslationManager $translationManager, array $supportedLocales)
     {
-        $this->reader = $reader;
-        $this->params = $params;
+        $this->translationManager = $translationManager;
+        $this->supportedLocales = $supportedLocales;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $catalog = new MessageCatalogue($options['defaultLocale']);
-        $this->reader->read($this->params->get('translator.default_path'), $catalog);
+        $catalog = $this->translationManager->getHydratedCatalog($options['defaultLocale']);
 
         $builder
             ->add('domain', ChoiceType::class, [
@@ -48,7 +45,7 @@ class TranslationsFiltersType extends AbstractType
             ])
             ->add('locale', ChoiceType::class, [
                 'label' => 'Translation locale',
-                'choices' => $this->params->get('supported_locales'),
+                'choices' => $this->supportedLocales,
                 'choice_label' => function ($choice, $key, $value) {
                     return $value;
                 }
