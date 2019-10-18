@@ -43,7 +43,7 @@ class TranslationController extends AbstractController
         $defaultLocale = $request->getDefaultLocale();
 
         $form = $this->createForm(TranslationsFiltersType::class, [
-            'domain' => 'messages',
+            'domain' => 'countries',
             'locale' => $defaultLocale,
         ], [
             'defaultLocale' => $defaultLocale,
