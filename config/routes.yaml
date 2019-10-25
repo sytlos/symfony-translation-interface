@@ -1,3 +1,7 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+app_translation_list:
+    path: /
+    controller: App\Controller\TranslationController::list
+
+app_translation_add:
+  path: /add
+  controller: App\Controller\TranslationController::add

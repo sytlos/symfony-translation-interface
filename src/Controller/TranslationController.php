@@ -8,12 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * Class TranslationController
- * @package App\Controller
- */
 class TranslationController extends AbstractController
 {
     /**
@@ -22,8 +17,6 @@ class TranslationController extends AbstractController
     private $translationManager;
 
     /**
-     * TranslationController constructor.
-     *
      * @param TranslationManager $translationManager
      */
     public function __construct(TranslationManager $translationManager)
@@ -32,8 +25,6 @@ class TranslationController extends AbstractController
     }
 
     /**
-     * @Route("/")
-     *
      * @param Request $request
      *
      * @return Response
@@ -73,8 +64,6 @@ class TranslationController extends AbstractController
     }
 
     /**
-     * @Route("/submit")
-     *
      * @param Request $request
      *
      * @return JsonResponse

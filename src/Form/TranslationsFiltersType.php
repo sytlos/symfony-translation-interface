@@ -22,7 +22,6 @@ class TranslationsFiltersType extends AbstractType
     private $supportedLocales;
 
     /**
-     * TranslationsFiltersType constructor.
      * @param TranslationManager $translationManager
      * @param array $supportedLocales
      */
@@ -32,6 +31,10 @@ class TranslationsFiltersType extends AbstractType
         $this->supportedLocales = $supportedLocales;
     }
 
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $catalog = $this->translationManager->getHydratedCatalog($options['defaultLocale']);
@@ -56,6 +59,9 @@ class TranslationsFiltersType extends AbstractType
         ;
     }
 
+    /**
+     * @param OptionsResolver $resolver
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver
@@ -65,6 +71,9 @@ class TranslationsFiltersType extends AbstractType
         ;
     }
 
+    /**
+     * @return string|null
+     */
     public function getBlockPrefix()
     {
         return null;

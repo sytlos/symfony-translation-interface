@@ -25,8 +25,6 @@ class TranslationManager
     private $translationPath;
 
     /**
-     * TranslationManager constructor.
-     *
      * @param TranslationReaderInterface $reader
      * @param TranslationWriterInterface $writer
      * @param string $translationPath
