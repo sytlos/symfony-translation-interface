@@ -1,8 +1,8 @@
-# Easily translate your app through a simple user interface
+# Easily translate your Symfony app through a simple user interface
 
 ![Easily translate your app through a simple user interface](https://raw.githubusercontent.com/hugosoltys/symfony-translation-interface/master/doc/translations-ui-preview.png)
 
-## Why this POC
+## Why this POC ?
 In many Symfony projects, you have to support multiple languages
 for your users.
 
@@ -11,8 +11,8 @@ of the time but there comes a time when you have to translate all your
 translation keys in all the supported languages of your application.
 
 You know the stuggles of this. A deployment is required each time your
-Product Owner wants to change "Validate" by "Submit" or when you have
-to deploy a hotfix because you thought that "Green" was writed "Verre" 
+Product Owner wants to change `Validate` by `Submit` or when you have
+to deploy a hotfix because you thought that `Green` was writed `Verre` 
 in French.
 
 That's why I developed this POC. It provides a simple UI allowing a
@@ -37,6 +37,8 @@ provided by your `%translator.default_path%` parameter.
 
 If you want to support more locales, just add them to the `supported_locales`
 parameters of your `config/services.yaml` file.
+
+The default locale is the one chosen in the `config/packages/translation.yaml`.
 
 ## Required dependencies
 
