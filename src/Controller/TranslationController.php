@@ -52,6 +52,10 @@ class TranslationController extends AbstractController
 
         $form->handleRequest($request);
 
+        if ($form->isSubmitted() && !$form->isValid()) {
+            return $this->redirectToRoute('app_translation_list');
+        }
+
         $selectedDomain = $form->get('domain')->getData();
         $selectedLocale = $form->get('locale')->getData();
 

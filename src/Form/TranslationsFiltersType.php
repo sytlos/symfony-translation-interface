@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Choice;
 
 class TranslationsFiltersType extends AbstractType
 {
@@ -39,6 +40,7 @@ class TranslationsFiltersType extends AbstractType
             ->add('domain', ChoiceType::class, [
                 'label' => 'Translation domain',
                 'choices' => $catalog->getDomains(),
+                'constraints' => new Choice(['choices' => $catalog->getDomains()]),
                 'choice_label' => function ($choice, $key, $value) {
                     return $value;
                 }
@@ -46,6 +48,7 @@ class TranslationsFiltersType extends AbstractType
             ->add('locale', ChoiceType::class, [
                 'label' => 'Translation locale',
                 'choices' => $this->supportedLocales,
+                'constraints' => new Choice(['choices' => $this->supportedLocales]),
                 'choice_label' => function ($choice, $key, $value) {
                     return $value;
                 }

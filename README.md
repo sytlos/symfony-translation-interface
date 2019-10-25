@@ -21,10 +21,3 @@ domain and/or locale.
 For each translation, you can see the key, the text translated in the
 default locale and an input in which you just have to type the translated
 message in the chosen locale.
-
-The list is built thanks to the `TranslationReaderInterface` of the 
-`symfony/translation` package.
-
-The submission is done with the Javascript fetch API, and the writing
-is made with the `TranslationWriterInterface` and the Symfony
-`Filesystem` Component. 
