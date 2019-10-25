@@ -40,6 +40,12 @@ parameters of your `config/services.yaml` file.
 
 The default locale is the one chosen in the `config/packages/translation.yaml`.
 
+## Try it !
+
+Just clone this repository and run `composer install` and `symfony server:start`
+
+Check [this link](https://symfony.com/doc/current/setup/symfony_server.html) to install Symfony Server.
+
 ## Required dependencies
 
 - symfony/form
