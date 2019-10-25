@@ -1,5 +1,7 @@
 # Easily translate your app through a simple user interface
 
+![Easily translate your app through a simple user interface](https://raw.githubusercontent.com/hugosoltys/symfony-translation-interface/master/doc/translations-ui-preview.png)
+
 In many Symfony projects, you have to support multiple languages
 for your users.
 
